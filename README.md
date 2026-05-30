@@ -1,0 +1,299 @@
+# X-Template V.0.0.0-Genesis
+
+> Cyberpunk Glassmorphism starter template — React + TypeScript + Vite
+
+[![Deploy to GitHub Pages](https://github.com/Ex2-Axon/x-template/actions/workflows/deploy.yml/badge.svg)](https://github.com/Ex2-Axon/x-template/actions/workflows/deploy.yml)
+[![Bluesky](https://img.shields.io/badge/Bluesky-%40microtronic.bsky.social-0085ff?logo=bluesky&logoColor=white)](https://bsky.app/profile/microtronic.bsky.social)
+
+**Live demo:** https://ex2-axon.github.io/x-template/
+
+![Screenshot](screenshot.png)
+
+---
+
+## Stack
+
+| | |
+|---|---|
+| **Framework** | React 19 + TypeScript |
+| **Build tool** | Vite 8 |
+| **Styling** | CSS (Glassmorphism + Neon) + Tailwind CSS 4 |
+| **Package manager** | pnpm |
+| **Deploy** | GitHub Pages (auto on push) |
+
+---
+
+## Features
+
+- Cyberpunk glassmorphism UI with full animation
+- Neon glow effects — cyan, pink, purple, green
+- Animated grid background + floating particles
+- Glitch text effect on title
+- Scanline CRT overlay
+- Orbit rings on hero image
+- Staggered entrance animations
+- Auto-deploy to GitHub Pages on push
+- Auto-post to Discord, Bluesky, X on push
+
+---
+
+## Getting Started
+
+```bash
+# Install dependencies
+pnpm install
+
+# Start dev server
+pnpm dev
+
+# Build for production
+pnpm build
+
+# Preview production build
+pnpm preview
+```
+
+---
+
+## GitHub Actions Workflows
+
+| Workflow | Trigger | Description |
+|---|---|---|
+| `deploy.yml` | push to main | Build & deploy to GitHub Pages |
+| `discord-notify.yml` | push to main | Send release embed to Discord |
+| `bluesky-notify.yml` | push to main | Post release to Bluesky |
+| `x-notify.yml` | push to main | Post release to X (Twitter) |
+
+### Required Secrets
+
+Go to **Settings → Secrets and variables → Actions** and add:
+
+| Secret | Description |
+|---|---|
+| `DISCORD_WEBHOOK_URL` | Discord webhook URL |
+| `BSKY_IDENTIFIER` | Bluesky handle (e.g. `microtronic.bsky.social`) |
+| `BSKY_APP_PASSWORD` | Bluesky app password |
+| `X_API_KEY` | X Consumer Key |
+| `X_API_SECRET` | X Consumer Secret |
+| `X_ACCESS_TOKEN` | X Access Token |
+| `X_ACCESS_TOKEN_SECRET` | X Access Token Secret |
+
+---
+
+## Project Structure
+
+```
+x-template/
+├── .github/
+│   └── workflows/
+│       ├── deploy.yml
+│       ├── discord-notify.yml
+│       ├── bluesky-notify.yml
+│       └── x-notify.yml
+├── public/
+│   ├── favicon.svg
+│   └── icons.svg
+├── src/
+│   ├── assets/
+│   ├── App.tsx
+│   ├── App.css
+│   ├── index.css
+│   └── main.tsx
+├── package.json
+└── vite.config.ts
+```
+
+---
+
+## Connect
+
+- Bluesky: [@microtronic.bsky.social](https://bsky.app/profile/microtronic.bsky.social)
+- Discord: [Join server](https://discord.gg/8Zeq8VCU)
+- GitHub: [Ex2-Axon](https://github.com/Ex2-Axon)
+
+## Generation Prompt
+```text
+You are building a daily UI project. Below is the theme specification for today.
+
+## Theme Context (daily-context.json)
+```json
+{
+  "day": 35,
+  "date": "2026-05-30",
+  "version": "1.35.0",
+  "project_name": "x-template-035",
+  "theme": {
+    "name": "Neon Noir",
+    "style": "neon-noir",
+    "mood": "gritty, electric, mysterious, dark"
+  },
+  "palette": {
+    "background": "#050505",
+    "surface": "#0f0f0f",
+    "primary": "#ff006e",
+    "accent": "#00f5ff",
+    "text": "#cccccc",
+    "muted": "#333333"
+  },
+  "typography": {
+    "heading": "Bebas Neue",
+    "body": "Rajdhani",
+    "size": "large"
+  },
+  "layout": {
+    "structure": "centered",
+    "density": "normal",
+    "border_style": "neon glow border"
+  },
+  "animation": {
+    "level": "moderate",
+    "style": "flicker, pulse, rain"
+  },
+  "components": {
+    "hero_text": "NOIR",
+    "subtitle": "The city never sleeps.",
+    "button_label": "ENTER_",
+    "badge_text": "DISTRICT 7 — LIVE"
+  },
+  "commit_message": "feat: UI Day 35 — Neon Noir [fallback]",
+  "source": "fallback",
+  "selected_component": {
+    "category": "Notifications",
+    "component": "ActiveIceDigital_fuzzy-fly-47.html",
+    "path": "C:\\Users\\User\\Documents\\GitHub\\Axon\\x-components\\Notifications\\ActiveIceDigital_fuzzy-fly-47.html",
+    "content": "<div class=\"notification\">\n  <span>Congratulatioins Champion!</span>\n  <div id=\"level\">\n    <div class=\"one\">↑</div>\n    <div id=\"lvl\">Level 10</div>\n    <div class=\"one\">↑</div>\n  </div>\n</div>\n<style>\n/* Tags: notification */\n@keyframes ud {\n  0% {\n    transform: translateY(-1px);\n    opacity: 0;\n  }\n\n  50% {\n    transform: translateY(-5px);\n    opacity: 1;\n  }\n\n  100% {\n    transform: translateY(-1px);\n    opacity: 0;\n  }\n}\n\n.notification {\n  width: 250px;\n  height: 60px;\n  background: rgba(0, 0, 0, 0.5);\n  border-radius: 14px;\n  padding: 5px 15px;\n  text-align: center;\n  box-shadow: 2px 2px 0px 1px rgba(255, 0, 0, 0.5) inset, \n  -2px -2px 0px 1px rgba(255, 0, 0, 0.8) inset,\n  0px 2px 5px 0px rgba(0, 0, 0, .25);\n}\n\n#lvl {\n  font-weight: 700;\n  text-transform: uppercase;\n  letter-spacing: 2px;\n  font-size: 20px;\n}\n\n.notification > span {\n  font-size: 11px;\n  text-transform: uppercase;\n  letter-spacing: 1px;\n}\n\n#level {\n  display: flex;\n  justify-content: center;\n  margin-top: 5px;\n  gap: 5px;\n}\n\n.one {\n  display: inline-block;\n  font-size: 25px;\n  line-height: 25px;\n  animation: ud 1s ease-in-out infinite;\n  color: rgba(255, 0, 0, 0.95);\n}\n</style>"
+  }
+}
+```
+
+## Selected Component Reference
+- Category: Notifications
+- Component: ActiveIceDigital_fuzzy-fly-47.html
+- Path: C:\Users\User\Documents\GitHub\Axon\x-components\Notifications\ActiveIceDigital_fuzzy-fly-47.html
+
+Use the selected component HTML below as the primary design reference for the new UI. Keep the structure and styling assumptions in mind while rewriting the requested files.
+```html
+<div class="notification">
+  <span>Congratulatioins Champion!</span>
+  <div id="level">
+    <div class="one">↑</div>
+    <div id="lvl">Level 10</div>
+    <div class="one">↑</div>
+  </div>
+</div>
+<style>
+/* Tags: notification */
+@keyframes ud {
+  0% {
+    transform: translateY(-1px);
+    opacity: 0;
+  }
+
+  50% {
+    transform: translateY(-5px);
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateY(-1px);
+    opacity: 0;
+  }
+}
+
+.notification {
+  width: 250px;
+  height: 60px;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 14px;
+  padding: 5px 15px;
+  text-align: center;
+  box-shadow: 2px 2px 0px 1px rgba(255, 0, 0, 0.5) inset, 
+  -2px -2px 0px 1px rgba(255, 0, 0, 0.8) inset,
+  0px 2px 5px 0px rgba(0, 0, 0, .25);
+}
+
+#lvl {
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-size: 20px;
+}
+
+.notification > span {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+#level {
+  display: flex;
+  justify-content: center;
+  margin-top: 5px;
+  gap: 5px;
+}
+
+.one {
+  display: inline-block;
+  font-size: 25px;
+  line-height: 25px;
+  animation: ud 1s ease-in-out infinite;
+  color: rgba(255, 0, 0, 0.95);
+}
+</style>
+```
+
+## Your Task
+Completely redesign the UI by rewriting these three files from scratch:
+- `src/App.tsx`
+- `src/App.css`
+- `src/index.css`
+
+## Rules for App.tsx
+1. Keep ALL existing imports:
+   - `import { useState, useEffect, useRef } from 'react'`
+   - `import reactLogo from './assets/react.svg'`
+   - `import viteLogo from './assets/vite.svg'`
+   - `import heroImg from './assets/hero.png'`
+   - `import './App.css'`
+2. Keep the `CounterNum` component (useRef + useEffect animation)
+3. Keep the counter button with `onClick` / `setCount` handler
+4. Keep the Documentation section (Vite/React links)
+5. Keep the Social section (GitHub/Discord/X/Bluesky links + SVG icons)
+6. Do NOT use CSS custom properties (`--var-name`) in inline `style` attributes — TypeScript will error
+
+## Rules for CSS
+- Apply the palette, typography, layout structure, animation level, and component text from the JSON above
+- Use Google Fonts via `@import` in `index.css`
+- Match the theme mood: gritty, electric, mysterious, dark
+
+## Mandatory Requirements (apply to every build)
+
+### 1. Responsive — Mobile First
+- Design for mobile (320px) first, scale up with `min-width` breakpoints
+- Touch targets minimum 44×44px
+- No horizontal scroll on any screen size
+- Fluid typography: use `clamp()` or responsive units (`rem`, `%`, `vw`)
+- Images and layout must reflow gracefully at 320px, 768px, 1280px
+
+### 2. Footer Copyright
+- The page MUST have a `<footer>` at the bottom
+- Footer text: `© 2026 Microtronic. All rights reserved.`
+- Style the footer to match the theme palette (muted text on surface background)
+
+### 3. SEO Standards
+- `index.html` must have a descriptive `<title>`: `NOIR — Neon Noir | Microtronic`
+- Add `<meta name="description">` with the subtitle: `The city never sleeps.`
+- Add `<meta name="keywords">` relevant to the theme
+- Add Open Graph tags: `og:title`, `og:description`, `og:type` (website)
+- All images must have meaningful `alt` attributes
+- Use semantic HTML: `<header>`, `<main>`, `<section>`, `<footer>`, `<nav>` where appropriate
+- Heading hierarchy: one `<h1>` (hero), `<h2>` for sections — no skipping levels
+
+## After saving all files
+1. Update `version` in `package.json` to `1.35.0`
+2. Update `<title>` and meta tags in `index.html` as specified above
+3. Run: `pnpm build`
+4. If build succeeds → write `done` to `scripts/build-done.flag`
+5. If build fails with TypeScript errors → fix them and rebuild
+
+```

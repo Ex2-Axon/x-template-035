@@ -1,0 +1,126 @@
+name: Bluesky Release Post
+
+on:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  post-bluesky:
+    name: Post to Bluesky
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Read version from package.json
+        id: pkg
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          APP_NAME=$(node -p "require('./package.json').name")
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "app_name=$APP_NAME" >> $GITHUB_OUTPUT
+
+      - name: Get commit info
+        id: commit
+        run: |
+          COMMIT_MSG=$(git log -1 --pretty=format:"%s")
+          COMMIT_HASH=$(git log -1 --pretty=format:"%h")
+          COMMIT_AUTHOR=$(git log -1 --pretty=format:"%an")
+          echo "message=$COMMIT_MSG" >> $GITHUB_OUTPUT
+          echo "hash=$COMMIT_HASH" >> $GITHUB_OUTPUT
+          echo "author=$COMMIT_AUTHOR" >> $GITHUB_OUTPUT
+
+      - name: Post to Bluesky via AT Protocol
+        env:
+          BSKY_IDENTIFIER: ${{ secrets.BSKY_IDENTIFIER }}
+          BSKY_APP_PASSWORD: ${{ secrets.BSKY_APP_PASSWORD }}
+        run: |
+          # ── Step 1: Create session (get access token) ──
+          AUTH_RESPONSE=$(curl -s -X POST "https://bsky.social/xrpc/com.atproto.server.createSession" \
+            -H "Content-Type: application/json" \
+            -d "{\"identifier\": \"$BSKY_IDENTIFIER\", \"password\": \"$BSKY_APP_PASSWORD\"}")
+
+          ACCESS_JWT=$(echo "$AUTH_RESPONSE" | node -e "
+            let d=''; process.stdin.on('data',c=>d+=c).on('end',()=>{
+              const r=JSON.parse(d);
+              if(!r.accessJwt){ process.stderr.write('Auth failed: '+d); process.exit(1); }
+              process.stdout.write(r.accessJwt);
+            });
+          ")
+
+          DID=$(echo "$AUTH_RESPONSE" | node -e "
+            let d=''; process.stdin.on('data',c=>d+=c).on('end',()=>{
+              process.stdout.write(JSON.parse(d).did);
+            });
+          ")
+
+          # ── Step 2: Build post text ──
+          REPO_URL="https://github.com/${{ github.repository }}"
+          COMMIT_URL="${REPO_URL}/commit/${{ github.sha }}"
+          BRANCH="${{ github.ref_name }}"
+          APP_NAME="${{ steps.pkg.outputs.app_name }}"
+          VERSION="${{ steps.pkg.outputs.version }}"
+          COMMIT_MSG="${{ steps.commit.outputs.message }}"
+          COMMIT_HASH="${{ steps.commit.outputs.hash }}"
+
+          POST_TEXT="🚀 ${APP_NAME} v${VERSION}"$'\n\n'"📝 ${COMMIT_MSG}"$'\n'"🌿 branch: ${BRANCH}"$'\n'"🔗 ${COMMIT_URL}"$'\n\n'"#opensource #webdev #vite #react"
+
+          # ── Step 3: Calculate facets (link highlight) ──
+          # Find byte position of the commit URL in the text for rich link facet
+          TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%S.000Z")
+
+          POST_TEXT="$POST_TEXT" COMMIT_URL="$COMMIT_URL" DID="$DID" TIMESTAMP="$TIMESTAMP" node -e "
+            const text = process.env.POST_TEXT;
+            const url = process.env.COMMIT_URL;
+            const encoder = new TextEncoder();
+            const textBytes = encoder.encode(text);
+            const urlBytes = encoder.encode(url);
+
+            // Find byte offset of URL in text
+            let byteStart = -1;
+            for (let i = 0; i <= textBytes.length - urlBytes.length; i++) {
+              let match = true;
+              for (let j = 0; j < urlBytes.length; j++) {
+                if (textBytes[i+j] !== urlBytes[j]) { match = false; break; }
+              }
+              if (match) { byteStart = i; break; }
+            }
+            const byteEnd = byteStart + urlBytes.length;
+
+            const payload = {
+              repo: process.env.DID,
+              collection: 'app.bsky.feed.post',
+              record: {
+                \$type: 'app.bsky.feed.post',
+                text: text,
+                facets: byteStart >= 0 ? [{
+                  index: { byteStart, byteEnd },
+                  features: [{ \$type: 'app.bsky.richtext.facet#link', uri: url }]
+                }] : [],
+                createdAt: process.env.TIMESTAMP
+              }
+            };
+
+            process.stdout.write(JSON.stringify(payload));
+          " > /tmp/bsky_payload.json
+
+          # ── Step 4: Post ──
+          RESPONSE=$(curl -s -X POST "https://bsky.social/xrpc/com.atproto.repo.createRecord" \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer $ACCESS_JWT" \
+            -d @/tmp/bsky_payload.json)
+
+          echo "Response: $RESPONSE"
+
+          # Check success
+          if echo "$RESPONSE" | grep -q '"uri"'; then
+            echo "✅ Posted to Bluesky successfully"
+          else
+            echo "❌ Failed to post"
+            exit 1
+          fi
