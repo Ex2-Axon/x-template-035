@@ -1,36 +1,31 @@
 import { useState, useEffect, useRef } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
 import heroImg from './assets/hero.png'
-import './App.css'
 
-/* ── Floating particles ── */
-function Particles() {
-  const colors = ['#00f5ff', '#bf00ff', '#ff006e', '#00ff88', '#ffee00']
-  const particles = Array.from({ length: 30 }, (_, i) => ({
+/* ── Extreme Rain ── */
+function Rain() {
+  const drops = Array.from({ length: 60 }, (_, i) => ({
     id: i,
     left: `${Math.random() * 100}%`,
-    delay: `${Math.random() * 15}s`,
-    duration: `${8 + Math.random() * 12}s`,
-    color: colors[Math.floor(Math.random() * colors.length)],
-    size: `${1 + Math.random() * 3}px`,
+    delay: `${Math.random() * 5}s`,
+    duration: `${0.4 + Math.random() * 0.8}s`,
+    opacity: 0.05 + Math.random() * 0.2,
+    height: `${50 + Math.random() * 100}px`
   }))
 
   return (
-    <div className="particles" aria-hidden="true">
-      {particles.map((p) => (
-        <span
-          key={p.id}
-          className="particle"
+    <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden" aria-hidden="true">
+      {drops.map((d) => (
+        <div
+          key={d.id}
+          className="absolute w-[1px] bg-accent animate-rain"
           style={{
-            left: p.left,
-            bottom: '-10px',
-            animationDelay: p.delay,
-            animationDuration: p.duration,
-            background: p.color,
-            boxShadow: `0 0 6px ${p.color}`,
-            width: p.size,
-            height: p.size,
+            left: d.left,
+            top: '-150px',
+            height: d.height,
+            animationDelay: d.delay,
+            animationDuration: d.duration,
+            opacity: d.opacity,
+            boxShadow: `0 0 10px ${d.opacity > 0.15 ? 'var(--color-accent)' : 'transparent'}`
           }}
         />
       ))}
@@ -38,168 +33,234 @@ function Particles() {
   )
 }
 
-/* ── Corner decorations ── */
-function Corners() {
+/* ── Cyber Terminal Logs ── */
+function CyberTerminal() {
+  const [logs, setLogs] = useState<string[]>([])
+  const logMessages = [
+    "INITIALIZING_NEURAL_LINK...",
+    "ACCESS_GRANTED: DISTRICT_7",
+    "ENCRYPTING_DATA_STREAM...",
+    "BYPASSING_FIREWALL_v4.2...",
+    "UPLINK_ESTABLISHED",
+    "SCANNING_FOR_INTRUDERS...",
+    "SYSTEM_STABLE: 100%",
+    "NEON_CORE_ONLINE"
+  ]
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setLogs(prev => {
+        const nextLog = logMessages[Math.floor(Math.random() * logMessages.length)]
+        return [...prev.slice(-5), `> ${nextLog}`]
+      })
+    }, 2000)
+    return () => clearInterval(interval)
+  }, [])
+
   return (
-    <>
-      <div className="corner-tl" aria-hidden="true" />
-      <div className="corner-tr" aria-hidden="true" />
-      <div className="corner-bl" aria-hidden="true" />
-      <div className="corner-br" aria-hidden="true" />
-    </>
+    <div className="fixed bottom-24 left-8 z-50 font-mono text-[9px] text-accent/60 space-y-1 pointer-events-none hidden md:block">
+      {logs.map((log, i) => (
+        <div key={i} className="animate-flicker" style={{ opacity: (i + 1) / logs.length }}>
+          {log}
+        </div>
+      ))}
+    </div>
   )
 }
 
-/* ── Animated counter number ── */
-function CounterNum({ value }: { value: number }) {
-  const ref = useRef<HTMLSpanElement>(null)
-
-  useEffect(() => {
-    const el = ref.current
-    if (!el) return
-    el.style.transform = 'scale(1.4)'
-    el.style.color = '#ff006e'
-    el.style.textShadow = '0 0 20px #ff006e'
-    const t = setTimeout(() => {
-      el.style.transform = 'scale(1)'
-      el.style.color = ''
-      el.style.textShadow = ''
-    }, 200)
-    return () => clearTimeout(t)
-  }, [value])
-
+/* ── Scanning Line ── */
+function ScanningLine() {
   return (
-    <span
-      ref={ref}
-      className="counter-num"
-      style={{ transition: 'all 0.2s ease' }}
-    >
-      {value}
-    </span>
+    <div className="fixed left-0 right-0 h-[2px] bg-accent/20 shadow-[0_0_15px_rgba(0,245,255,0.5)] z-50 pointer-events-none animate-scanning" />
+  )
+}
+
+/* ── Notification ── */
+function Notification() {
+  return (
+    <div className="fixed top-8 right-8 z-[100] animate-flicker group cursor-default">
+      <div className="w-[250px] h-[60px] bg-black/70 backdrop-blur-xl rounded-xl p-2 px-4 text-center shadow-[inset_2px_2px_0px_1px_rgba(255,0,0,0.5),inset_-2px_-2px_0px_1px_rgba(255,0,0,0.8),0px_10px_30px_rgba(0,0,0,0.5)] border border-primary/30 transition-transform group-hover:scale-105">
+        <span className="text-[10px] uppercase tracking-[0.2em] text-text/80">Congratulations Champion!</span>
+        <div className="flex justify-center mt-1 gap-1 items-center">
+          <div className="text-[25px] leading-[25px] animate-bounce text-primary">↑</div>
+          <div className="font-heading uppercase tracking-[2px] text-[22px] text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]">Level 10</div>
+          <div className="text-[25px] leading-[25px] animate-bounce text-primary">↑</div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/* ── Glitch Text ── */
+function GlitchText({ text }: { text: string }) {
+  return (
+    <div className="relative inline-block group">
+      <h1 className="text-8xl md:text-[10rem] font-heading text-white relative z-10 animate-flicker tracking-tighter leading-none">
+        {text}
+      </h1>
+      <h1 className="text-8xl md:text-[10rem] font-heading text-primary absolute inset-0 -z-10 translate-x-[4px] translate-y-[2px] opacity-70 group-hover:animate-glitch select-none">
+        {text}
+      </h1>
+      <h1 className="text-8xl md:text-[10rem] font-heading text-accent absolute inset-0 -z-10 -translate-x-[4px] -translate-y-[2px] opacity-70 group-hover:animate-glitch animation-delay-150 select-none">
+        {text}
+      </h1>
+      <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity mix-blend-overlay z-20 pointer-events-none" />
+    </div>
   )
 }
 
 function App() {
   const [count, setCount] = useState(0)
+  const [isHacking, setIsHacking] = useState(false)
+  const containerRef = useRef<HTMLDivElement>(null)
+
+  const handleEnter = () => {
+    setCount(c => c + 1)
+    setIsHacking(true)
+    setTimeout(() => setIsHacking(false), 300)
+  }
 
   return (
-    <>
-      <Particles />
-      <Corners />
+    <div 
+      ref={containerRef}
+      className={`min-h-screen relative flex flex-col items-center justify-center p-4 md:p-8 transition-colors duration-300 ${isHacking ? 'bg-primary/10' : 'bg-background'}`}
+    >
+      {/* Background & Overlays */}
+      <div className="grid-overlay opacity-50" />
+      <div className="scanlines" />
+      <div className="noise" />
+      <Rain />
+      <ScanningLine />
+      <CyberTerminal />
+      <Notification />
 
-      {/* ── Hero section ── */}
-      <section id="center">
-        <div className="hero-badge animate-in-1">
-          <span className="dot" />
-          SYSTEM ONLINE — VITE + REACT
-        </div>
+      {/* Extreme Background Decor */}
+      <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[120px] pointer-events-none animate-pulse-slow" />
+      <div className="fixed -bottom-32 -left-32 w-96 h-96 border border-accent/5 rounded-full animate-float-slow" />
+      <div className="fixed -top-32 -right-32 w-96 h-96 border border-primary/5 rounded-full animate-float-slow [animation-delay:2s]" />
 
-        <div className="hero animate-in-2">
-          <img src={heroImg} className="base" width="160" height="168" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
+      {/* HUD Corners */}
+      <div className="fixed top-6 left-6 w-16 h-16 border-t-2 border-l-2 border-accent/40 z-50 before:content-['STATUS:OK'] before:absolute before:top-0 before:left-4 before:text-[8px] before:font-mono before:text-accent/60" />
+      <div className="fixed top-6 right-6 w-16 h-16 border-t-2 border-r-2 border-accent/40 z-50 after:content-['SECURE:YES'] after:absolute after:top-0 after:right-4 after:text-[8px] after:font-mono after:text-accent/60" />
+      <div className="fixed bottom-6 left-6 w-16 h-16 border-b-2 border-l-2 border-accent/40 z-50 before:content-['COORD:0x35'] before:absolute before:bottom-0 before:left-4 before:text-[8px] before:font-mono before:text-accent/60" />
+      <div className="fixed bottom-6 right-6 w-16 h-16 border-b-2 border-r-2 border-accent/40 z-50 after:content-['LINK:ACTIVE'] after:absolute after:bottom-0 after:right-4 after:text-[8px] after:font-mono after:text-accent/60" />
 
-        <div className="animate-in-3">
-          <h1 className="glitch" data-text="GET STARTED">
-            GET STARTED
-          </h1>
-          <div className="neon-line" />
-        </div>
-
-        <p className="subtitle animate-in-4">
-          Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-        </p>
-
-        <button
-          type="button"
-          className="counter animate-in-5"
-          onClick={() => setCount((c) => c + 1)}
-        >
-          COUNT_
-          <CounterNum value={count} />
-        </button>
-      </section>
-
-      <div className="ticks" />
-
-      {/* ── Next steps ── */}
-      <section id="next-steps">
-        <div id="docs">
-          <div className="section-icon-wrap">
-            <svg className="icon" role="presentation" aria-hidden="true">
-              <use href="/icons.svg#documentation-icon" />
-            </svg>
+      {/* Main Content */}
+      <main className={`relative z-10 flex flex-col items-center gap-6 max-w-5xl w-full transition-transform duration-300 ${isHacking ? 'scale-105' : 'scale-100'}`}>
+        
+        {/* Animated Badge */}
+        <div className="group relative">
+          <div className="absolute inset-0 bg-primary/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
+          <div className="relative flex items-center gap-3 px-6 py-2 bg-black/40 border border-primary/40 rounded-sm overflow-hidden group-hover:border-primary">
+            <div className="w-2 h-2 bg-primary rounded-full shadow-[0_0_10px_#ff006e] animate-ping" />
+            <span className="text-xs font-mono tracking-[0.4em] text-primary uppercase">District 7 — Live Stream</span>
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
           </div>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank" rel="noreferrer">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank" rel="noreferrer">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn More
-              </a>
-            </li>
-          </ul>
         </div>
 
-        <div id="social">
-          <div className="section-icon-wrap">
-            <svg className="icon" role="presentation" aria-hidden="true">
-              <use href="/icons.svg#social-icon" />
-            </svg>
+        {/* Hero Section */}
+        <div className="relative py-8">
+          {/* Hero Image Container */}
+          <div className="relative group perspective-1000">
+            <div className="absolute inset-0 bg-primary/30 blur-[100px] rounded-full scale-125 animate-pulse-slow opacity-50" />
+            <img 
+              src={heroImg} 
+              alt="Hero" 
+              className="w-56 md:w-72 relative z-10 drop-shadow-[0_0_50px_rgba(255,0,110,0.4)] transition-all duration-700 group-hover:scale-110 group-hover:rotate-3"
+            />
+            {/* Orbital Rings */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] border border-accent/10 rounded-full animate-spin [animation-duration:20s] pointer-events-none" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[140%] h-[140%] border border-dashed border-primary/10 rounded-full animate-spin [animation-duration:30s] direction-reverse pointer-events-none" />
           </div>
-          <h2>Connect With Us</h2>
-          <p>Join the Vite X-Template Community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/Ex2-Axon/x-template" target="_blank" rel="noreferrer">
-                <svg className="button-icon" role="presentation" aria-hidden="true">
-                  <use href="/icons.svg#github-icon" />
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://discord.gg/8Zeq8VCU" target="_blank" rel="noreferrer">
-                <svg className="button-icon" role="presentation" aria-hidden="true">
-                  <use href="/icons.svg#discord-icon" />
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/Microtronic2" target="_blank" rel="noreferrer">
-                <svg className="button-icon" role="presentation" aria-hidden="true">
-                  <use href="/icons.svg#x-icon" />
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/microtronic.bsky.social" target="_blank" rel="noreferrer">
-                <svg className="button-icon" role="presentation" aria-hidden="true">
-                  <use href="/icons.svg#bluesky-icon" />
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
         </div>
-      </section>
 
-      <div className="ticks" />
+        {/* Hero Text */}
+        <div className="text-center space-y-4">
+          <GlitchText text="NOIR" />
+          <div className="flex flex-col items-center gap-2">
+            <p className="text-accent font-mono tracking-[0.6em] text-sm md:text-lg opacity-90 uppercase animate-flicker">
+              The city never sleeps.
+            </p>
+            <div className="w-24 h-[1px] bg-gradient-to-r from-transparent via-accent to-transparent" />
+          </div>
+        </div>
 
-      <section id="spacer">
-        <span className="footer-text">// SYSTEM v1.0.0 — READY</span>
-      </section>
-    </>
+        {/* Interaction Area */}
+        <div className="flex flex-col items-center gap-8 mt-4">
+          <button
+            onClick={handleEnter}
+            className="group relative px-16 py-5 bg-transparent transition-all duration-300 active:scale-90 overflow-hidden"
+          >
+            {/* Multi-layered Borders */}
+            <div className="absolute inset-0 border border-accent/20 group-hover:border-accent/40 transition-colors" />
+            <div className="absolute -inset-[1px] border border-accent/0 group-hover:border-accent/20 transition-colors" />
+            
+            {/* Corner Accents */}
+            <div className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 border-accent shadow-[0_0_10px_var(--color-accent)]" />
+            <div className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 border-accent shadow-[0_0_10px_var(--color-accent)]" />
+            <div className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 border-accent shadow-[0_0_10px_var(--color-accent)]" />
+            <div className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 border-accent shadow-[0_0_10px_var(--color-accent)]" />
+            
+            {/* Background Glitch Effect */}
+            <div className="absolute inset-0 bg-accent/0 group-hover:bg-accent/5 transition-colors" />
+            <div className="absolute inset-0 translate-x-full group-hover:translate-x-0 bg-gradient-to-r from-transparent via-accent/10 to-transparent transition-transform duration-500" />
+            
+            <span className="relative z-10 text-accent font-heading text-3xl tracking-[0.3em] drop-shadow-[0_0_10px_rgba(0,245,255,0.5)]">
+              ENTER_ <span className="text-primary group-hover:animate-glitch inline-block">{count}</span>
+            </span>
+          </button>
+
+          {/* System Footer Info */}
+          <div className="flex flex-wrap justify-center gap-x-12 gap-y-4 text-[10px] font-mono tracking-widest text-muted uppercase">
+            <div className="flex items-center gap-2 hover:text-accent cursor-pointer transition-colors group">
+              <span className="w-1.5 h-1.5 bg-accent/40 rounded-full group-hover:bg-accent animate-pulse" />
+              // PROTOCOL_v1.35.0
+            </div>
+            <div className="flex items-center gap-2 hover:text-primary cursor-pointer transition-colors group">
+              <span className="w-1.5 h-1.5 bg-primary/40 rounded-full group-hover:bg-primary animate-pulse" />
+              // NEURAL_LINK_ESTABLISHED
+            </div>
+            <div className="flex items-center gap-2 hover:text-white cursor-pointer transition-colors group">
+              <span className="w-1.5 h-1.5 bg-white/20 rounded-full group-hover:bg-white animate-pulse" />
+              // SYSTEM_READY
+            </div>
+          </div>
+        </div>
+      </main>
+
+      {/* Floating UI Elements */}
+      <div className="fixed bottom-8 left-8 right-8 z-10 flex justify-between items-end pointer-events-none">
+        <div className="space-y-2 group pointer-events-auto cursor-help">
+          <div className="h-[1px] w-32 bg-gradient-to-r from-accent/40 to-transparent" />
+          <p className="text-[9px] font-mono text-muted tracking-[0.2em] uppercase group-hover:text-accent transition-colors">
+            Node: <span className="text-accent/60">AXON-35-GENESIS</span>
+          </p>
+          <p className="text-[9px] font-mono text-muted tracking-[0.2em] uppercase">
+            Uptime: <span className="text-accent/60">99.998%</span>
+          </p>
+        </div>
+        
+        <div className="text-right space-y-2 group pointer-events-auto cursor-help">
+          <p className="text-[9px] font-mono text-muted tracking-[0.2em] uppercase group-hover:text-primary transition-colors">
+            Identity: <span className="text-primary/60">ANONYMOUS_GHOST</span>
+          </p>
+          <p className="text-[9px] font-mono text-muted tracking-[0.2em] uppercase">
+            Session: <span className="text-primary/60">0x{Math.random().toString(16).slice(2, 8).toUpperCase()}</span>
+          </p>
+          <div className="h-[1px] w-32 bg-gradient-to-l from-primary/40 to-transparent ml-auto" />
+        </div>
+      </div>
+
+      {/* Distortion Filters */}
+      <svg className="hidden">
+        <defs>
+          <filter id="glitch-filter">
+            <feTurbulence type="fractalNoise" baseFrequency="0.01" numOctaves="3" result="noise" />
+            <feDisplacementMap in="SourceGraphic" in2="noise" scale="5" />
+          </filter>
+        </defs>
+      </svg>
+    </div>
   )
 }
 
