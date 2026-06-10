@@ -1,3 +1,4 @@
+
 name: Deploy to GitHub Pages
 
 on:
@@ -5,9 +6,7 @@ on:
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
   push:
-    branches:
-      - main
-      - master
+    branches: [main, master]
   workflow_dispatch:
 
 permissions:
@@ -19,6 +18,10 @@ concurrency:
   group: pages
   cancel-in-progress: true
 
+env:
+  PROJECT_NAME: x-template-035
+  SITE_URL: https://x-template-035.github.io/x-template-035
+
 jobs:
   build:
     name: Build
@@ -26,6 +29,7 @@ jobs:
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true' ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -36,10 +40,10 @@ env:
           node-version:
 
 env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true' '24'
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true' '22'
 
       - name: Install pnpm
-        uses: pnpm/action-setup@v5
+        uses: pnpm/action-setup@v3
         with:
           version:
 
@@ -54,21 +58,8 @@ env:
         run: pnpm build
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v5
-        with:
-          path: ./dist
+        uses: actions/upload-pages-artifact@v3
 
-  deploy:
-    name: Deploy
-    needs: build
-    runs-on:
-
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true' ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v5
+        uses: actions/deploy-pages@v3
